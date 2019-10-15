@@ -1,26 +1,26 @@
 
 {
-  "siteName": "广西医学会",
+  "siteName": "江西省医学会",
   "siteName_id": "fg5eu6coaz",
-  "index": "http://www.cqma.cn",
+  "index": "http://www.jxma.org/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 2,
-  "list_type": 2,
-  "next_type": 5,
-  "base_url": "http://www.cqma.cn/xhdt1.html?cid=19",
+  "list_type": 6,
+  "next_type": 3,
+  "base_url": "http://www.jxma.org/wzsy/index.shtml",
   "rules":   {
-      "xpath_list_title": "//div[@class='e_box e_articles-001 p_Newslist']//@title[1]",
-      "xpath_list_link": "//div[@class='e_box e_articles-001 p_Newslist']//a[@target]/@href",
-      "xpath": "//div[@class='e_box e_articles-001 p_Newslist']//a[@target]/@href",
+      "xpath_list_title": "//div[@class='CRtext']//a/text",
+      "xpath_list_link": "//div[@class='CRtext']//a/@href",
+      "xpath": "href=\"(.*)\"",
+      "first_re": 1,
       "list_more_url_type": 2,
-      "next_url": "http://www.cqma.cn/xhdt1.html?cid=19#c_news_list-1543480558692-{}",
       "more_url_type": 2,
-      "next_page": ".*(-[0-9])",
-      "xpath_time": "//div[@class='e_box e_articles-001 p_Newslist']//div[@class='font']//text()",
-      "title":  "//div[@class='e_box e_box-001 p_news']//h1//div[@class='font']/text()",
-      "content": "//p",
-      "datetime": "//div[@class='e_title e_AssistInfo-001 p_time']//text()"
+      "next_page": "//a[text()='下一页»']/@href",
+      "xpath_time": "//div[@class='CRtext']/div[2]/text()",
+      "title":  "//td[@class='Title']/text()",
+      "content": "//table/tbody/tr//div",
+      "datetime": "//div[@class='tc']/span[1]"
     }
 
 }

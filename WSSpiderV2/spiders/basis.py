@@ -45,16 +45,17 @@ class BaseParse(object):
     def make_request(self, url, callback, spider, params={}):
         _meta = dict(self.config, **params)
         _meta['parse'] = {'obj': self, 'method': callback.__name__}
-        header = {
+        headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/"
                       "*;q=0.8,application/signed-exchange;v=b3",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh;q=0.9",
             "Connection": "keep-alive",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
-                          "like Gecko) Chrome/77.0.3865.90 Safari/537.36",
-            "Referer": url}
-        return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True, headers=header)
+                          "like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+        }
+        return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
+                              headers=headers)
 
     # JSON 参数请求
     def make_json_request(self, url, callback, spider, body):
@@ -92,7 +93,10 @@ class GeneralParse(BaseParse):
             _link = self.more_url(response=response, spider=spider, result=result)
             print(_link)
             for i in _link:
-                yield self.make_request(url=i, callback=self.parse_item, spider=spider)
+                if "request_type" in list(self.config['rules'].keys()):
+                    yield self.make_json_request(url=i, callback=self.parse_item, body=None, spider=spider)
+                else:
+                    yield self.make_request(url=i, callback=self.parse_item, spider=spider)
             net_url = self.next_url(spider=spider, response=response)
             print(net_url)
             if net_url:
@@ -148,10 +152,12 @@ class GeneralParse(BaseParse):
             if "request_time" in list(response.meta.keys()):
                 request_time = response.meta['request_time']
                 if request_time == 1:
-                    text = response.text
-                    # 创建一个 Selector 类的实例
-                    print(self.config['rules']['xpath_list_link'])
-                    result = list(set(re.findall(r'%s' % self.config['rules']['xpath_list_link'], text)))
+                    # print(self.config['rules']['xpath_list_link'])
+                    if "second_re" in list(self.config.get('rules').keys()):
+                        text = response.text
+                        result = list(set(re.findall(r'%s' % self.config['rules']['xpath_list_link'], text)))
+                    else:
+                        result = response.xpath(self.config['rules']['xpath_list_link']).extract()
                     print(result)
                     print('解析主目录结果')
                     print(response.url)
@@ -161,7 +167,6 @@ class GeneralParse(BaseParse):
                     print(_href_list)
                     print(len(_href_list))
                     # raise 2
-                    # print(_href_list)
                     if len(_href_list) > 0:
                         for index in range(len(_href_list)):
                             url = _href_list[index]
@@ -177,7 +182,7 @@ class GeneralParse(BaseParse):
                 if "first_re" in list(self.config.get('rules').keys()):
                     text = response.text
                     # 创建一个 Selector 类的实例
-                    print(self.config['rules']['xpath_list_link'])
+                    print(self.config['rules']['xpath'])
                     result = re.findall(r'%s' % self.config['rules']['xpath'], text)
                 else:
                     print(self.config['rules']['xpath'])
@@ -202,6 +207,9 @@ class GeneralParse(BaseParse):
         rule_dict = self.config.get('rules')
         if "list_more_url_type" in list(rule_dict.keys()):
             list_more_url_type = rule_dict['list_more_url_type']
+            if list_more_url_type == 1:  # 替换
+                for i in result:
+                    _href_list.append(urljoin(response.url, i))
             if list_more_url_type == 2:  # 需要拼接主域名的url
                 for i in result:
                     if not i.startswith('http'):
@@ -228,7 +236,8 @@ class GeneralParse(BaseParse):
             more_url_type = rule_dict['more_url_type']
             _href_list = []
             if more_url_type == 1:  # xpath解析到的结果直接为目标页面的url
-                return result
+                for i in result:
+                    _href_list.append(urljoin(response.url, i))
             elif more_url_type == 2:  # 解析到需要拼接的url
                 for i in result:
                     if '#' not in i:
@@ -323,12 +332,8 @@ class GeneralParse(BaseParse):
             return _next_page_url
         elif self.config.get('next_type') == 5:
             _next_page_url = urljoin(response.url, self.config.get('rules')['next_url'].format(self.page_index))
-            # _next_page_url = self.config.get('rules')['next_url']
-            # if response.url == self.config.get('rules')['next_url']:
-            #     _next_page_url = response.url
             self.page_index += 1
 
-            # page = re.findall(r'%s' % self.config.get('rules')['next_page'], _next_page_url)
             print(response.url)
             print(_next_page_url)
             print('this is next page')

@@ -9,7 +9,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import redis, os
-from WSSpiderV2.configs.product import *
+from WSSpiderV2.configs.develop import *
 
 BOT_NAME = 'WSSpiderV2'
 
@@ -62,9 +62,9 @@ COOKIES_ENABLED = False
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'WSSpiderV2.middlewares.Wsspiderv2DownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   'WSSpiderV2.middlewares.UserAgentDownloadMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
