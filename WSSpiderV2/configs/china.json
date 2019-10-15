@@ -1,0 +1,26 @@
+
+{
+  "siteName": "中华网科技",
+  "siteName_id": "7BTMQ7Rpq",
+  "index": "http://tech.china.com/",
+  "allow_img": false,
+  "allow_video": false,
+  "url_type": 0,
+  "list_type": 1,
+  "next_type": 1,
+  "base_url": "https://tech.china.com/articles/",
+  "allowed_domains": [
+    "tech.china.com"
+  ],
+  "rules": {
+      "loader": "ChinaLoader",
+      "xpath_list_link": "//div[@class=\"conR\"]/h2/a/@href",
+      "xpath_list_title": "//div[@class=\"conR\"]/h2/a/text()",
+      "xpath": "//a[@data-action=\"26798\"]/@href",
+      "next_page": "//a[text()=\"下一页\"]/@href",
+      "body_next_page": "//a[text()=\"下一页\"]/@href",
+      "title": "//h1[@id='chan_newsTitle']/text()",
+      "content": "//div[@id='chan_newsDetail']",
+      "datetime": "//div[@id='chan_newsInfo']/text()[2]"
+    }
+}
