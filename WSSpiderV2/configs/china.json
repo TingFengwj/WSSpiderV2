@@ -2,25 +2,23 @@
 {
   "siteName": "中华网科技",
   "siteName_id": "7BTMQ7Rpq",
-  "index": "http://tech.china.com/",
+  "index": "http://www.hnma.org.cn/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
-  "list_type": 1,
-  "next_type": 1,
-  "base_url": "https://tech.china.com/articles/",
-  "allowed_domains": [
-    "tech.china.com"
-  ],
+  "list_type": 3,
+  "next_type": 7,
+  "base_url": "http://www.hnma.org.cn/Index.asp",
   "rules": {
-      "loader": "ChinaLoader",
-      "xpath_list_link": "//div[@class=\"conR\"]/h2/a/@href",
-      "xpath_list_title": "//div[@class=\"conR\"]/h2/a/text()",
-      "xpath": "//a[@data-action=\"26798\"]/@href",
-      "next_page": "//a[text()=\"下一页\"]/@href",
-      "body_next_page": "//a[text()=\"下一页\"]/@href",
-      "title": "//h1[@id='chan_newsTitle']/text()",
-      "content": "//div[@id='chan_newsDetail']",
-      "datetime": "//div[@id='chan_newsInfo']/text()[2]"
+      "third_xpath": "//a[@class='more']/@href",
+      "third_more_type": 2,
+      "second_xpath": "//ul[@class='list_n']/li/a/@href",
+      "second_more_type": 2,
+      "next_page": "//div[@class='page_area']//a[2 or 1]/@href",
+      "xpath_title": "//ul[@class='list_n']/li/a/text",
+      "xpath_time": "//ul[@class='list_n']/li/span/text()",
+      "title":  "//div[@class='m_content']/h2/text()",
+      "content": "//div[@class='m_content']/p",
+      "datetime": "//div[@class='m_content']/div[@class='info']/span[2]/text()"
     }
 }

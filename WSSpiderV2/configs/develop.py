@@ -23,7 +23,7 @@ REDIS_CONFIG = {
 
 REDIS_KEY = 'wenjun'
 
-MAX_PROCESSES = 1
+MAX_PROCESSES = 16
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 

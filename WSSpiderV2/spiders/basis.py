@@ -27,7 +27,7 @@ class BaseParse(object):
         except Exception as e:
             logger.info(e)
             self.xpath_list_link = None
-        self.xpath_list_title = config.get('rules')['xpath_list_title']
+        self.xpath_title = config.get('rules')['xpath_title']
         self.list_type = config.get('list_type')
         self.config = config
         self.page_index = 1
@@ -76,147 +76,82 @@ class GeneralParse(BaseParse):
 
     def process(self, response, spider):
         """'此时根据列表类型不同，分别对各种类型的列表页进行处理'"""
-        _href_list = []
-        _title_list = []
-        # 列表类型(1：进入为正文，2：带有子列表页，3: ajax请求，4：其它乱序的,)
-        if self.list_type == 1:
+        print(self.list_type)
+        if self.list_type == 1:  # 直接对应内容页面，只需要填充title，time，content的xpath即可
             yield self.parse_item(response=response, spider=spider)
-            net_url = self.next_url(spider=spider, response=response)
-            if net_url:
-                yield self.make_request(url=net_url, callback=self.process, spider=spider)
         elif self.list_type == 2:
-            result = response.xpath(self.config['rules']['xpath']).extract()
-            # print(response.text)
+            if "second_xpath_re" in list(self.config.get('rules').keys()):
+                text = response.text
+                result = list(set(re.findall(r'%s' % self.config['rules']['second_xpath'], text)))
+            else:
+                result = list(set(response.xpath(self.config['rules']['second_xpath']).extract()))
             print(response.url)
             print(result)
             print('this is result')
-            _link = self.more_url(response=response, spider=spider, result=result)
+            _link = self.second_more_url(response=response, spider=spider, result=result)
             print(_link)
+            print('this is _link')
             for i in _link:
-                if "request_type" in list(self.config['rules'].keys()):
-                    yield self.make_json_request(url=i, callback=self.parse_item, body=None, spider=spider)
-                else:
-                    yield self.make_request(url=i, callback=self.parse_item, spider=spider)
+                yield self.make_request(url=i, callback=self.parse_item, spider=spider)
             net_url = self.next_url(spider=spider, response=response)
+            print('next_url')
             print(net_url)
+            print('next_url')
             if net_url:
+                self.list_type = 2
                 yield self.make_request(url=net_url, callback=self.process, spider=spider)
         elif self.list_type == 3:
-            _data = response.body.decode('utf-8')
-            _title_list = re.findall(eval(self.xpath_list_title), _data)
-            _href_list = re.findall(eval(self.xpath_list_link), _data)
-            if self.config['rules']['xpath_time_re']:
-                _time_list = re.findall(eval(self.config['rules']['xpath_time_re']), _data)
+            """三层列表页"""
+            if "third_xpath_re" in list(self.config.get('rules').keys()):
+                text = response.text
+                result = list(set(re.findall(r'%s' % self.config['rules']['third_xpath'], text)))
+            else:
+                result = response.xpath(self.config['rules']['third_xpath']).extract()
+            print('这是倒数第三层')
+            print(response.url)
+            print(result)
+            print(self.config['rules']['third_xpath'])
+            _link = self.third_more_url(response=response, spider=spider, result=result)
+            self.list_type = 2
+            for i in _link:
+                yield self.make_request(url=i, callback=self.process, spider=spider)
+
         elif self.list_type == 4:
-            pass
-        elif self.list_type == 5:  # 三层列表页
-            if "request_time" in list(response.meta.keys()):
-                request_time = response.meta['request_time']
-                if request_time == 1:
-                    print(self.config['rules']['xpath_list_link'])
-                    result = response.xpath(self.config['rules']['xpath_list_link']).extract()
-                    print('解析主目录结果')
-                    print(response.url)
-                    print(result)
-                    print('解析到结果为上')
-                    _href_list = self.list_more_url(response=response, spider=spider, result=result)
-                    print(_href_list)
-                    if len(_href_list) > 0:
-                        for index in range(len(_href_list)):
-                            url = _href_list[index]
-                            yield self.make_request(url, self.parse_item, spider)
-                        net_url = self.next_url(spider=spider, response=response)
-                        print('下一页url是')
-                        print(response.url)
-                        print(net_url)
-                        if net_url:
-                            yield self.make_request(url=net_url, callback=self.process, spider=spider,
-                                                    params={"request_time": 1})
+            """四层列表页"""
+            print('进入第四层list_type')
+            if "fourth_xpath_re" in list(self.config.get('rules').keys()):
+                text = response.text.decode('utf-8')
+                result = list(set(re.findall(r'%s' % self.config['rules']['fourth_xpath'], text)))
             else:
-                print(response.url)
-                print(self.config['rules']['xpath'])
-                result = response.xpath(self.config['rules']['xpath']).extract()
-                print('this is result')
-                print(result)
-                # raise 1
-                _link = self.more_url(response=response, spider=spider, result=result)
-                print(_link)
-                print(len(_link))
-                # raise 1
-                for i in _link:
-                    try:
-                        yield self.make_request(url=i, callback=self.process, spider=spider, params={"request_time": 1})
-                    except Exception as e:
-                        logger.info(e)
-        elif self.list_type == 6:  # 四层列表页
-            if "request_time" in list(response.meta.keys()):
-                request_time = response.meta['request_time']
-                if request_time == 1:
-                    # print(self.config['rules']['xpath_list_link'])
-                    if "second_re" in list(self.config.get('rules').keys()):
-                        text = response.text
-                        result = list(set(re.findall(r'%s' % self.config['rules']['xpath_list_link'], text)))
-                    else:
-                        result = response.xpath(self.config['rules']['xpath_list_link']).extract()
-                    print(result)
-                    print('解析主目录结果')
-                    print(response.url)
-                    print(result)
-                    print('解析到结果为上')
-                    _href_list = self.list_more_url(response=response, spider=spider, result=result)
-                    print(_href_list)
-                    print(len(_href_list))
-                    # raise 2
-                    if len(_href_list) > 0:
-                        for index in range(len(_href_list)):
-                            url = _href_list[index]
-                            yield self.make_request(url, self.parse_item, spider)
-                        net_url = self.next_url(spider=spider, response=response)
-                        print('下一页url是')
-                        print(response.url)
-                        print(net_url)
-                        if net_url:
-                            yield self.make_request(url=net_url, callback=self.process, spider=spider,
-                                                    params={"request_time": 1})
-            else:
-                if "first_re" in list(self.config.get('rules').keys()):
-                    text = response.text
-                    # 创建一个 Selector 类的实例
-                    print(self.config['rules']['xpath'])
-                    result = re.findall(r'%s' % self.config['rules']['xpath'], text)
-                else:
-                    print(self.config['rules']['xpath'])
-                    result = list(set(response.xpath(self.config['rules']['xpath']).extract()))
-                    print('this is result')
-                    print(result)
-                _link = self.more_url(response=response, spider=spider, result=result)
-                print(response.url)
-                print(_link)
-                print(len(_link))
-                for i in _link:
-                    try:
-                        yield self.make_request(url=i, callback=self.process, spider=spider, params={"request_time": 1})
-                    except Exception as e:
-                        logger.info(e)
+                result = list(set(response.xpath(self.config['rules']['fourth_xpath']).extract()))
+            print(response.url)
+            print(result)
+            print(self.config['rules']['fourth_xpath'])
+            _link = self.fourth_more_url(response=response, spider=spider, result=result)
+            print(_link)
+            self.list_type = 3
+            for i in _link:
+                yield self.make_request(url=i, callback=self.process, spider=spider)
         else:
             _href_list = response.xpath(self.xpath_list_link).extract()
-            _title_list = response.xpath(self.xpath_list_title).extract()
+            _title_list = response.xpath(self.xpath_title).extract()
 
-    def list_more_url(self, response, spider, result):
+    def second_more_url(self, response, spider, result):
+        """第二层更多url,返回结果对应第一层请求的url"""
         _href_list = []
         rule_dict = self.config.get('rules')
-        if "list_more_url_type" in list(rule_dict.keys()):
-            list_more_url_type = rule_dict['list_more_url_type']
-            if list_more_url_type == 1:  # 替换
+        if "second_more_type" in list(rule_dict.keys()):
+            second_more_type = rule_dict['second_more_type']
+            if second_more_type == 1:  # 替换
                 for i in result:
                     _href_list.append(urljoin(response.url, i))
-            if list_more_url_type == 2:  # 需要拼接主域名的url
+            if second_more_type == 2:  # 需要拼接主域名的url
                 for i in result:
                     if not i.startswith('http'):
                         _href_list.append(self.config.get('index') + i)
                     else:
                         _href_list.append(i)
-            elif list_more_url_type == 5:  # 需要进行re匹配的url
+            elif second_more_type == 5:  # 需要进行re匹配的url
                 result = [re.findall(r'(/[a-z]*[A-Z]*.*html)', j)[0] for j in result]
                 for i in result:
                     if i.startswith('.'):
@@ -230,29 +165,30 @@ class GeneralParse(BaseParse):
             _href_list = result
         return _href_list
 
-    def more_url(self, response, spider, result):
+    def third_more_url(self, response, spider, result):
+        """第三层更多url,返回结果对应第二层请求的url"""
         rule_dict = self.config.get('rules')
-        if "more_url_type" in list(rule_dict.keys()):
-            more_url_type = rule_dict['more_url_type']
+        if "third_more_type" in list(rule_dict.keys()):
+            third_more_type = rule_dict['third_more_type']
             _href_list = []
-            if more_url_type == 1:  # xpath解析到的结果直接为目标页面的url
+            if third_more_type == 1:  # xpath解析到的结果直接为目标页面的url
                 for i in result:
                     _href_list.append(urljoin(response.url, i))
-            elif more_url_type == 2:  # 解析到需要拼接的url
+            elif third_more_type == 2:  # 解析到需要拼接的url
                 for i in result:
                     if '#' not in i:
                         if not i.startswith('http'):
                             _href_list.append(self.config.get('index') + i)
                         else:
                             _href_list.append(i)
-            elif more_url_type == 3:  #
+            elif third_more_type == 3:  #
                 for i in result:
                     if i.startswith('.'):
                         final_url = response.url + i[1::]
                         _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
                     else:
                         _href_list.append(i)
-            elif more_url_type == 4:
+            elif third_more_type == 4:
                 result = [re.findall(r'.*href=\"(.*)\"', j)[0].strip() for j in result]
                 for i in result:
                     if i.startswith('.'):
@@ -260,7 +196,50 @@ class GeneralParse(BaseParse):
                         _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
                     else:
                         _href_list.append(i)
-            elif more_url_type == 5:
+            elif third_more_type == 5:
+                result = [re.findall(r'(/[a-z].*html)', j)[0] for j in result]
+                for i in result:
+                    if i.startswith('.'):
+                        final_url = response.url + i[1::]
+                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                    else:
+                        _href_list.append(self.config.get('index') + i)
+            return _href_list
+        else:
+            return result
+
+    def fourth_more_url(self, response, spider, result):
+        """第四层更多url,返回结果对应第三层请求的url"""
+        rule_dict = self.config.get('rules')
+        if "fourth_more_type" in list(rule_dict.keys()):
+            fourth_more_type = rule_dict['fourth_more_type']
+            _href_list = []
+            if fourth_more_type == 1:  # xpath解析到的结果直接为目标页面的url
+                for i in result:
+                    _href_list.append(urljoin(response.url, i))
+            elif fourth_more_type == 2:  # 解析到需要拼接的url
+                for i in result:
+                    if '#' not in i:
+                        if not i.startswith('http'):
+                            _href_list.append(self.config.get('index') + i)
+                        else:
+                            _href_list.append(i)
+            elif fourth_more_type == 3:  #
+                for i in result:
+                    if i.startswith('.'):
+                        final_url = response.url + i[1::]
+                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                    else:
+                        _href_list.append(i)
+            elif fourth_more_type == 4:
+                result = [re.findall(r'.*href=\"(.*)\"', j)[0].strip() for j in result]
+                for i in result:
+                    if i.startswith('.'):
+                        final_url = response.url + i[1::]
+                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                    else:
+                        _href_list.append(i)
+            elif fourth_more_type == 5:
                 result = [re.findall(r'(/[a-z].*html)', j)[0] for j in result]
                 for i in result:
                     if i.startswith('.'):
@@ -282,7 +261,11 @@ class GeneralParse(BaseParse):
                     print('response--channel_type', _next_page_url, self.config.get('next_type'))
                     return _next_page_url
         elif self.config.get('next_type') == 2:
-            _next_page_url = response.xpath(self.config.get('rules')['next_page']).extract_first()
+            try:
+                _next_page_url = response.xpath(self.config.get('rules')['next_page']).extract()[-1]
+            except Exception as e:
+                logger.debug(e)
+                _next_page_url = response.xpath(self.config.get('rules')['next_page']).extract_first()
             if _next_page_url:
                 if _next_page_url.startswith('http'):
                     return _next_page_url
@@ -339,14 +322,6 @@ class GeneralParse(BaseParse):
             print('this is next page')
             if self.page_index == 10:
                 raise 1
-            # if page:
-            #     number = re.findall(r'([0-9][0-9]*[0-9]*)', page[0])
-            #     next_number = str(int(number[0]) + 1)
-            #     new_page = page[0].replace(number[0], next_number)
-            #     _next_page_url = self.config.get('rules')['next_url'].replace(page[0], new_page)
-            #     print(_next_page_url)
-            # else:
-            #     _next_page_url = ''
             resp = requests.get(url=_next_page_url)
             if resp.status_code == 200:
                 return _next_page_url
@@ -360,6 +335,47 @@ class GeneralParse(BaseParse):
             _next_page_url = re.findall(r'%s' % self.config['rules']['next_page'], text)
             if _next_page_url:
                 return _next_page_url[0]
+            else:
+                return None
+
+        elif self.config.get('next_type') == 7:
+            if 'tml' in response.url:
+                _next_page_url = re.findall(r'.*(/.*[a-z]*h)tml', response.url)
+                if _next_page_url:
+                    page = re.findall(r'[0-9][0-9]*[0-9]*', _next_page_url[0])
+                    if page:
+                        new_page = str(int(page[0]) + 1)
+                        _next_page_url = response.url.replace(_next_page_url[0],
+                                                              _next_page_url[0].replace(page[0], new_page))
+                    else:
+                        _next_page_url = response.url.replace(_next_page_url[0], _next_page_url[0].replace('.', '_2.'))
+                else:
+                    if 'page' in response.url:
+                        page = re.findall(r'/page/([0-9][0-9]*[0-9]*)', response.url)
+                        if page:
+                            new_page = int(page[0]) + 1
+                            _next_page_url = response.url.replace(_next_page_url[0], page[0].replace(page[0], new_page))
+                        else:
+                            _next_page_url = None
+                    else:
+                        _next_page_url = response.url + '/page/2'
+            else:
+                try:
+                    _next_page_url = response.xpath(self.config.get('rules')['next_page']).extract()[-1]
+                except Exception as e:
+                    logger.debug(e)
+                    _next_page_url = response.xpath(self.config.get('rules')['next_page']).extract_first()
+                print(_next_page_url)
+                if _next_page_url:
+                    if _next_page_url.startswith('http'):
+                        return _next_page_url
+                    else:
+                        _next_page_url = response.url + '/' + _next_page_url
+                        return _next_page_url[0:6] + _next_page_url[6::].replace('//', '/')
+                else:
+                    return None
+            if requests.get(url=_next_page_url):
+                return _next_page_url
             else:
                 return None
 
@@ -413,11 +429,11 @@ class GeneralParse(BaseParse):
                                                                                             self.config['siteName_id'],
                                                                                             self.config['base_url']))
             # raise DropItem(u"{0} 正文为空 {1}".format(self.item['article_id'], self.item['web_url']))
-        print(self.item)
-        # yield Wsspiderv2Item(article_id=self.item['article_id'], title=self.item['title'], content=self.item['content'],
-        #                      siteName_id=self.config.get('siteName_id'), web_url=self.item['web_url'],
-        #                      base_url=self.config.get('base_url'), siteName=self.config.get('siteName'),
-        #                      channel=self.item['channel'], ctime=self.item['ctime'], get_time=self.item['get_time'])
+        # print(self.item)
+        yield Wsspiderv2Item(article_id=self.item['article_id'], title=self.item['title'], content=self.item['content'],
+                             siteName_id=self.config.get('siteName_id'), web_url=self.item['web_url'],
+                             base_url=self.config.get('base_url'), siteName=self.config.get('siteName'),
+                             channel=self.item['channel'], ctime=self.item['ctime'], get_time=self.item['get_time'])
 
     def fetch_image(self, matched):
         return urljoin(self.config['base_url'], matched.group(1))

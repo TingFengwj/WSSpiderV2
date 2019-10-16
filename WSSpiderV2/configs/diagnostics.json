@@ -1,27 +1,24 @@
 
 {
-  "siteName": "江西省医学会",
-  "siteName_id": "fg5eu6coaz",
-  "index": "http://www.jxma.org/",
+  "siteName": "中国数字医疗网",
+  "siteName_id": "7BTMQ7Rpq",
+  "index": "http://www.hc3i.cn/",
   "allow_img": false,
   "allow_video": false,
-  "url_type": 2,
-  "list_type": 6,
-  "next_type": 3,
-  "base_url": "http://www.jxma.org/wzsy/index.shtml",
-  "rules":   {
-      "xpath_list_title": "//div[@class='CRtext']//a/text",
-      "xpath_list_link": "//div[@class='CRtext']//a/@href",
-      "xpath": "href=\"(.*)\"",
-      "first_re": 1,
-      "list_more_url_type": 2,
-      "more_url_type": 2,
-      "next_page": "//a[text()='下一页»']/@href",
-      "xpath_time": "//div[@class='CRtext']/div[2]/text()",
-      "title":  "//td[@class='Title']/text()",
-      "content": "//table/tbody/tr//div",
-      "datetime": "//div[@class='tc']/span[1]"
+  "url_type": 0,
+  "list_type": 3,
+  "next_type": 7,
+  "base_url": "http://www.hc3i.cn/",
+  "rules": {
+      "third_xpath": "//div[@class='menu']//@href",
+      "third_more_type": 2,
+      "second_xpath": "//div[@class='name center']/a/@href",
+      "second_more_type": 2,
+      "next_page": "//a[text()='下一页']/@href",
+      "xpath_time": "//span[@class='time']/text()",
+      "xpath_title": "//div[@class='name center']/a/text()",
+      "title":  "//div[@class='title']//text()",
+      "content": "//div[@class='answer']//text()",
+      "datetime": "//ul[@class='data left']/li[1]/text()"
     }
-
 }
-
