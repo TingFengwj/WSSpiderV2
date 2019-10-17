@@ -109,6 +109,7 @@ class GeneralParse(BaseParse):
                 result = response.xpath(self.config['rules']['third_xpath']).extract()
             print('这是倒数第三层')
             print(response.url)
+            print(response.status)
             print(result)
             print(self.config['rules']['third_xpath'])
             _link = self.third_more_url(response=response, spider=spider, result=result)
@@ -125,6 +126,7 @@ class GeneralParse(BaseParse):
             else:
                 result = list(set(response.xpath(self.config['rules']['fourth_xpath']).extract()))
             print(response.url)
+            print(response.status)
             print(result)
             print(self.config['rules']['fourth_xpath'])
             _link = self.fourth_more_url(response=response, spider=spider, result=result)

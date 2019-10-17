@@ -30,7 +30,7 @@ REDIS_ARTICLE_CACHE_KEY = 'article_list_cache:'
 REDIS_SPIDER_ERROR_LIST_KEY = 'spider_error_list'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-HTTPERROR_ALLOWED_CODES = [403]
+HTTPERROR_ALLOWED_CODES = [403, 521]
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 32
 COOKIES_ENABLED = False
@@ -62,9 +62,9 @@ COOKIES_ENABLED = False
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-   'WSSpiderV2.middlewares.UserAgentDownloadMiddleware': 543,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#    'WSSpiderV2.middlewares.UserAgentDownloadMiddleware': 543,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
