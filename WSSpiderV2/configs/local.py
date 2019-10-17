@@ -1,10 +1,10 @@
 import os
 
 DATABASES = {
-    'host': 'localhost',
+    'host': '127.0.0.1',
     # 'host': 'localhost',
     # 'database': 'wspider',
-    'database': 'test_spiderv1',  # 测试库
+    'database': 'test_spiderv2',  # 测试库
     'user': 'root',
     'password':  'root',
     'port': 3306,
@@ -15,7 +15,7 @@ DATABASES = {
 }
 
 REDIS_CONFIG = {
-    'host': 'localhost',
+    'host': '127.0.0.1',
     'port': 6379,
     'db': 1
 }
@@ -30,3 +30,5 @@ HTTP_HEADER = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)"
                   " Chrome/42.0.2311.90 Safari/537.36"
 }
+
+MAX_PROCESSES = 1
