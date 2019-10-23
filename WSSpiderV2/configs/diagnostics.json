@@ -1,26 +1,24 @@
 
 {
-  "siteName": "河北省医学会",
+  "siteName": "中国民间中医医药研究开发协会",
   "siteName_id": "7BTMQ7Rpq",
-  "index": "http://www.hebma.com/",
+  "index": "http://www.wasmq88.com/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
-  "list_type": 4,
+  "list_type": 3,
   "next_type": 2,
-  "base_url": "http://www.hebma.com/",
+  "base_url": "http://www.wasmq88.com/xhjj",
   "rules": {
-      "fourth_xpath": "//a[text()='最新活动' or text()='科技宣传']/@href",
-      "fourth_more_type": 2,
-      "third_xpath": "//a[text()='更多']/@href",
-      "third_more_type": 2,
-      "second_xpath": "//div[@class='infolist']//a/@href",
+      "second_xpath": "//ul/li[@class='w_list_item']/a/@href",
+      "third_xpath": "//li[@class='w_nav_item']//a/@href",
       "second_more_type": 2,
-      "next_page": "//div[@class='page_area']//a[2 or 1]/@href",
-      "xpath_title": "//ul[@class='list_n']/li/a/text",
-      "xpath_time": "//ul[@class='list_n']/li/span/text()",
-      "title":  "//ul[@class='title']/h2/text()",
-      "content": "//div[@class='content']/ul[2]/p",
-      "datetime": "//ul[@class='title']/p/text()"
+      "third_more_type": 2,
+      "xpath_title": "//ul/li[@class='w_list_item']/a/text()",
+      "next_page": "//a[text()='下一页']/@href",
+      "xpath_time": "//ul/li[@class='w_list_item']/span/text()",
+      "title":  "//strong//text()",
+      "content": "//div[@class='yibuFrameContent text_Style1_Item0']//p/text()",
+      "datetime": "//div[@id='view_text_21_9_txt']//p//text()"
     }
 }
