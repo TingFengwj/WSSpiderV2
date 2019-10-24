@@ -52,5 +52,4 @@ class Wsspiderv2Pipeline(object):
             print(e)
             self.sess.rollback()
 
-        self.sess.commit()
         return item

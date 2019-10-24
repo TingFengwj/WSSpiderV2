@@ -1,24 +1,25 @@
 
 {
-  "siteName": "中华人民共和国国家卫生健康委员会",
+  "siteName": "中国民间中医医药研究开发协会",
   "siteName_id": "7BTMQ7Rpq",
-  "index": "http://www.nhc.gov.cn/",
+  "index": "http://www.39.net/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
   "list_type": 3,
-  "next_type": 3,
-  "base_url": "http://www.nhc.gov.cn/wjw/xinw/xwzx.shtml",
-  "rules": {
-      "second_xpath": "//ul[@class='zxxx_list mt20']//a/@href",
-      "second_more_type": 2,
-      "third_xpath": "//a[text()='新闻动态' or text()='委内司局' or text()='国际交流' or text()='媒体报道' or text()='疫情播报' or text()='时政要闻' or text()='国务院文件' or text()='回应关切' or text()='新闻发布会' or text()='在线发布']/@href",
+  "next_type": 7,
+  "base_url": "http://news.39.net/",
+  "rules":   {
+      "xpath_title": "//span[@class='text']/a/text()",
+      "second_xpath": "//span[@class='text']/a/@href",
+      "third_xpath": "//ul[@class='zixu']//a/@href",
       "third_more_type": 2,
-      "xpath_title": "//ul[@class='zxxx_list mt20']//a/text()",
-      "next_page": "//span[@class='arrow']/a[text()='下一页']//@href",
-      "xpath_time": "//ul[@class='zxxx_list mt20']//span/text()",
-      "title":  "//div[@class='tit']/text()",
-      "content": "//div[@class='con']//text()",
-      "datetime": "//div[@class='source']//span[1]/text()"
+      "second_more_type": 2,
+      "next_page": "//span/a[text()='下一页']/@href",
+      "xpath_time": "//span[@class='time']/text()",
+      "next_url": "http://news.39.net/jbyw/index_1.html",
+      "title":  "//div[@class='art_box']/h1/text()",
+      "content": "//div[@id='contentText']",
+      "datetime": "//div[@class='date']/em/text()"
     }
 }

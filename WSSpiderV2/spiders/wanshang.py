@@ -71,7 +71,7 @@ class WanshangSpider(RedisSpider):
         """解析next_request方法返回的response，实例化爬虫为spider对象，调用process方法"""
         _class_config = response.meta
         print(_class_config)
-        # print(response)
+        print(response)
         try:
             _spider = GeneralParse(_class_config)  # 爬虫实例化
             return _spider.process(response, self)
