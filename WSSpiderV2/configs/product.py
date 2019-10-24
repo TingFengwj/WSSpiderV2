@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
+import pymysql, os
 
 DATABASES = {
     'host': '192.168.0.167',
-    'database': 'wspider',
+    'database': 'test_spiderv2',  # 测试库
     'user': 'root',
-    'password':  'QWE@zw666',
+    'password': 'QWE@zw666',
     'port': 3306,
-    'charset': 'utf8mb4'
+    'charset': 'utf8mb4',
+    'cursorclass': pymysql.cursors.DictCursor,
 }
 
 REDIS_CONFIG = {
     'host': '192.168.0.167',
     'port': 6379,
-    'db': 0
+    'db': 4
 }
 
-REDIS_KEY = 'class_config'
+REDIS_KEY = 'wenjun'
 
 MAX_PROCESSES = 8
 
-BASE_DIR = '/home/spider/logs/'
+BASE_DIR = '/home/spider/xiehui_log/'
 
 
 HTTP_HEADER = [

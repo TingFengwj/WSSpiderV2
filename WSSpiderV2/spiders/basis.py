@@ -302,12 +302,12 @@ class GeneralParse(BaseParse):
                 else:
                     _next_page_url = response.url.replace(_next_page_url[0], _next_page_url[0].replace('.', '_2.'))
             elif 'page' in response.url:
-                    page = re.findall(r'/page/([0-9][0-9]*[0-9]*)', response.url)
-                    if page:
-                        new_page = int(page[0]) + 1
-                        _next_page_url = response.url.replace(_next_page_url[0], page[0].replace(page[0], new_page))
-                    else:
-                        _next_page_url = None
+                page = re.findall(r'/page/([0-9][0-9]*[0-9]*)', response.url)
+                if page:
+                    new_page = int(page[0]) + 1
+                    _next_page_url = response.url.replace(_next_page_url[0], page[0].replace(page[0], new_page))
+                else:
+                    _next_page_url = None
             else:
                 _next_page_url = response.url + 'index_1.htm'
 
@@ -336,13 +336,14 @@ class GeneralParse(BaseParse):
             print(response.url)
             print(_next_page_url)
             print('this is next page')
-            if self.page_index == 10:
-                raise 1
-            resp = requests.get(url=_next_page_url)
-            if resp.status_code == 200:
-                return _next_page_url
-            else:
+            if self.page_index > 100:
                 return None
+            else:
+                resp = requests.get(url=_next_page_url)
+                if resp.status_code == 200:
+                    return _next_page_url
+                else:
+                    return None
 
         elif self.config.get('next_type') == 6:
             """re匹配"""
@@ -409,7 +410,6 @@ class GeneralParse(BaseParse):
             else:
                 return None
 
-
     def parse_item(self, response, spider):
         self.item = {'get_time': get_now(), 'web_url': response.url, 'article_id': get_rnd_id()}
         try:
@@ -452,19 +452,22 @@ class GeneralParse(BaseParse):
                                                                                                'title'],
                                                                                            self.config['siteName_id'],
                                                                                            self.config['base_url']))
-            # raise DropItem(u"{0} 标题为空 {1}".format(self.item['article_id'], self.item['web_url']))
         if 'content' not in self.item.keys() or self.item['content'] is None or filter_pun(self.item['content']) == '':
             logger.error('content为空:web_url:{},xpath:{},siteName_id:{}, base_url:{}'.format(response.url,
                                                                                             self.config.get('rules')[
                                                                                                 'content'],
                                                                                             self.config['siteName_id'],
                                                                                             self.config['base_url']))
-            # raise DropItem(u"{0} 正文为空 {1}".format(self.item['article_id'], self.item['web_url']))
-        print(self.item)
-        # yield Wsspiderv2Item(article_id=self.item['article_id'], title=self.item['title'], content=self.item['content'],
-        #                      siteName_id=self.config.get('siteName_id'), web_url=self.item['web_url'],
-        #                      base_url=self.config.get('base_url'), siteName=self.config.get('siteName'),
-        #                      channel=self.item['channel'], ctime=self.item['ctime'], get_time=self.item['get_time'])
+        if self.item['content'] and self.item['title']:
+            try:
+                yield Wsspiderv2Item(article_id=self.item['article_id'], title=self.item['title'],
+                                     content=self.item['content'],
+                                     siteName_id=self.config.get('siteName_id'), web_url=self.item['web_url'],
+                                     base_url=self.config.get('base_url'), siteName=self.config.get('siteName'),
+                                     channel=self.item['channel'], ctime=self.item['ctime'],
+                                     get_time=self.item['get_time'])
+            except Exception as e:
+                logger.error(e)
 
     def fetch_image(self, matched):
         return urljoin(self.config['base_url'], matched.group(1))

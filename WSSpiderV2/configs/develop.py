@@ -2,15 +2,10 @@ import pymysql, os
 
 DATABASES = {
     'host': '192.168.0.167',
-    # 'host': 'localhost',
-    # 'database': 'wspider',
     'database': 'test_spiderv2',  # 测试库
     'user': 'root',
     'password': 'QWE@zw666',
     'port': 3306,
-    # 'mincached': 5,
-    # 'maxcached': 30,
-    # 'maxusage': 30,
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor,
 }

@@ -2,23 +2,24 @@
 {
   "siteName": "中国民间中医医药研究开发协会",
   "siteName_id": "7BTMQ7Rpq",
-  "index": "http://www.wasmq88.com/",
+  "index": "http://www.39.net/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
   "list_type": 3,
-  "next_type": 2,
-  "base_url": "http://www.wasmq88.com/xhjj",
-  "rules": {
-      "second_xpath": "//ul/li[@class='w_list_item']/a/@href",
-      "third_xpath": "//li[@class='w_nav_item']//a/@href",
-      "second_more_type": 2,
+  "next_type": 7,
+  "base_url": "http://news.39.net/",
+  "rules":   {
+      "xpath_title": "//span[@class='text']/a/text()",
+      "second_xpath": "//span[@class='text']/a/@href",
+      "third_xpath": "//ul[@class='zixu']//a/@href",
       "third_more_type": 2,
-      "xpath_title": "//ul/li[@class='w_list_item']/a/text()",
-      "next_page": "//a[text()='下一页']/@href",
-      "xpath_time": "//ul/li[@class='w_list_item']/span/text()",
-      "title":  "//strong//text()",
-      "content": "//div[@class='yibuFrameContent text_Style1_Item0']//p/text()",
-      "datetime": "//div[@id='view_text_21_9_txt']//p//text()"
+      "second_more_type": 2,
+      "next_page": "//span/a[text()='下一页']/@href",
+      "xpath_time": "//span[@class='time']/text()",
+      "next_url": "http://news.39.net/jbyw/index_1.html",
+      "title":  "//div[@class='art_box']/h1/text()",
+      "content": "//div[@id='contentText']",
+      "datetime": "//div[@class='date']/em/text()"
     }
 }
