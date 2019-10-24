@@ -20,6 +20,8 @@ REDIS_KEY = 'wenjun'
 
 MAX_PROCESSES = 16
 
+BloomFilter_KEY = "BroadCrawlsKEY"
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 HTTP_HEADER = {

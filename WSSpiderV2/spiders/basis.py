@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from fake_useragent import UserAgent
 import scrapy
 import re, json, datetime, time
-from WSSpiderV2.settings import HTTP_HEADER, client
+from WSSpiderV2.settings import HTTP_HEADER, client, BL
 from WSSpiderV2.items import Wsspiderv2Item
 from WSSpiderV2.utils.common import get_rnd_id, get_now, dupe_url_check, extract_date, filter_pun
 from WSSpiderV2.settings import LOGGING
@@ -54,8 +54,12 @@ class BaseParse(object):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                           "like Gecko) Chrome/77.0.3865.90 Safari/537.36"
         }
-        return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
-                              headers=headers)
+        if not BL.isContains(url):
+            BL.insert(url)
+            return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
+                                  headers=headers)
+        else:
+            logger.info('已爬取过该url，url：{}').format(url)
 
     # JSON 参数请求
     def make_json_request(self, url, callback, spider, body):

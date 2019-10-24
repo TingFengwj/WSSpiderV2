@@ -23,6 +23,7 @@ MAX_PROCESSES = 8
 
 BASE_DIR = '/home/spider/xiehui_log/'
 
+BloomFilter_KEY = "BroadCrawlsKEY"
 
 HTTP_HEADER = {
     "Accept": "text/html,application/xhtml+xml,application/xml;",

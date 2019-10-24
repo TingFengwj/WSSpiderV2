@@ -10,6 +10,7 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import redis, os
 from WSSpiderV2.configs.develop import *
+from WSSpiderV2.utils.bloom_filter import BloomFilter
 
 BOT_NAME = 'WSSpiderV2'
 
@@ -102,7 +103,7 @@ ITEM_PIPELINES = {
 REDIS_CONFIG = REDIS_CONFIG
 redis_pool = redis.ConnectionPool(**REDIS_CONFIG)
 client = redis.Redis(connection_pool=redis_pool)
-
+BL = BloomFilter(key=BloomFilter_KEY)
 # LOG_ENABLED = False  # 关闭日志
 
 HTTP_HEADER = HTTP_HEADER

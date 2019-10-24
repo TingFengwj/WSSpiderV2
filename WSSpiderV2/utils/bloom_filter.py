@@ -2,6 +2,8 @@
 from hashlib import md5
 from WSSpiderV2.settings import client
 
+from hashlib import md5
+
 
 class SimpleHash(object):
     def __init__(self, cap, seed):
@@ -16,10 +18,15 @@ class SimpleHash(object):
 
 
 class BloomFilter(object):
-    def __init__(self, blockNum=1, key='bloomfilter'):
+    def __init__(self, blockNum=1, key=None):
+        """
+        :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.
+        :param key: the key's name in Redis
+        """
         self.server = client
-        self.bit_size = 1 << 31  # Redis的String类型最大容量为512M，现使用256M
-        self.seeds = [5, 7, 11, 13, 31, 37, 61]
+        self.bit_size = 1 << 31
+        # Redis的String类型最大容量为512M，现使用256M
+        self.seeds = [5, 7, 11]
         self.key = key
         self.blockNum = blockNum
         self.hashfunc = []
@@ -30,27 +37,27 @@ class BloomFilter(object):
         if not str_input:
             return False
         m5 = md5()
-        m5.update(str_input.encode('utf-8'))
+        m5.update(str_input.encode("utf8"))
         str_input = m5.hexdigest()
         ret = True
-        name = self.key + str(int(str_input[0:2], 16) % self.blockNum)
         for f in self.hashfunc:
             loc = f.hash(str_input)
-            ret = ret & self.server.getbit(name, loc)
+            ret = ret & self.server.getbit(self.key, loc)
         return ret
 
     def insert(self, str_input):
         m5 = md5()
-        m5.update(str_input.encode('utf-8'))
+        m5.update(str_input.encode("utf8"))
         str_input = m5.hexdigest()
-        name = self.key + str(int(str_input[0:2], 16) % self.blockNum)
         for f in self.hashfunc:
             loc = f.hash(str_input)
-            self.server.setbit(name, loc, 1)
+            self.server.setbit(self.key, loc, 1)
 
-    def has_item(self, str_input):
-        if self.isContains(str_input):  # 判断字符串是否存在
-            return True
-        else:
-            self.insert(str_input)
-            return False
+
+if __name__ == '__main__':
+    content = ''
+    bl = BloomFilter(key='monitor_project')
+    if not bl.isContains(content):
+        bl.insert(content)
+    else:
+        pass

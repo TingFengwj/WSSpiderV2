@@ -19,7 +19,9 @@ REDIS_CONFIG = {
     'port': 6379,
     'db': 1
 }
-REDIS_KEY = 'class_config'
+REDIS_KEY = 'wenjun'
+
+BloomFilter_KEY = "BroadCrawlsKEY"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
