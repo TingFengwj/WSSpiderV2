@@ -61,7 +61,7 @@ class BaseParse(object):
     def make_json_request(self, url, callback, spider, body):
         _meta = {'parse': {'obj': self, 'method': callback.__name__}}
         return scrapy.Request(url, method='POST', body=json.dumps(body), headers={'Content-Type': 'application/json'},
-                              meta=_meta, callback=spider.parse_item)
+                              meta=_meta, callback=spider.parse_item, dont_filter=False)
 
     def _get_headers(self, referer, params={}):
         headers = dict(HTTP_HEADER, **params)
