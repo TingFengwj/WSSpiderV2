@@ -9,7 +9,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import redis, os
-from WSSpiderV2.configs.develop import *
+from WSSpiderV2.configs.local import *
 from WSSpiderV2.utils.bloom_filter import BloomFilter
 
 BOT_NAME = 'WSSpiderV2'
@@ -31,7 +31,7 @@ REDIS_ARTICLE_CACHE_KEY = 'article_list_cache:'
 REDIS_SPIDER_ERROR_LIST_KEY = 'spider_error_list'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-HTTPERROR_ALLOWED_CODES = [403, 521]
+HTTPERROR_ALLOWED_CODES = [403, 521, 400]
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 32
 COOKIES_ENABLED = False
@@ -103,7 +103,6 @@ ITEM_PIPELINES = {
 REDIS_CONFIG = REDIS_CONFIG
 redis_pool = redis.ConnectionPool(**REDIS_CONFIG)
 client = redis.Redis(connection_pool=redis_pool)
-BL = BloomFilter(key=BloomFilter_KEY)
 # LOG_ENABLED = False  # 关闭日志
 
 HTTP_HEADER = HTTP_HEADER

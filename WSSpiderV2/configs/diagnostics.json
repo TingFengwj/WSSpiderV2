@@ -1,27 +1,24 @@
 
 {
-  "siteName": "中国民间中医医药研究开发协会",
+  "siteName": "上海市人民政府",
   "siteName_id": "7BTMQ7Rpq",
-  "index": "http://www.39.net/",
+  "index_url": "http://www.cpa.org.cn/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
-  "list_type": 4,
-  "next_type": 1,
-  "base_url": "http://www.beijing.gov.cn/ywdt/",
+  "list_type": 3,
+  "next_type": 3,
+  "base_url": "http://www.cpa.org.cn/?do=infolist&classid=213",
   "rules":   {
-      "fourth_xpath": "//ul[@class='u-nav-ywdt f-clear']//li/a/@href",
-      "fourth_more_type": 1 ,
-      "xpath_title": "//span[@class='text']/a/text()",
-      "second_xpath": "//div[@class='listBox']//li/a/@href",
-      "third_xpath": "//div[@class='more divright' or @class='divleft xwfbh ml50' or @class='divleft zwzb ml50']//a/@href",
-      "third_more_type": 1,
-      "second_more_type": 1,
-      "next_page": "//a[text()='下一页']/@href",
-      "xpath_time": "//span[@class='time']/text()",
-      "next_url": "http://news.39.net/jbyw/index_1.html",
-      "title":  "//div[@class='art_box']/h1/text()",
-      "content": "//div[@id='contentText']",
-      "datetime": "//div[@class='date']/em/text()"
+      "xpath_title": "//div[@id='clist']//a/text()",
+      "second_xpath": "//div[@id='clist']//a/@href",
+      "third_xpath": "//div[@id='cbleft']//a/@href",
+      "third_more_type": 2,
+      "second_more_type": 2,
+      "next_page": "&page=2",
+      "xpath_time": "//div[@id='cbleft']//span/@title",
+      "title":  "//h1[font]//text()",
+      "content": "//div[@id='cpabody']//p",
+      "datetime": "//div[@id='ctis']//text()"
     }
 }

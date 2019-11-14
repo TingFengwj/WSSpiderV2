@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from hashlib import md5
-from WSSpiderV2.settings import client
 
 from hashlib import md5
 
@@ -23,7 +22,7 @@ class BloomFilter(object):
         :param blockNum: one blockNum for about 90,000,000; if you have more strings for filtering, increase it.
         :param key: the key's name in Redis
         """
-        self.server = client
+        self.server = None
         self.bit_size = 1 << 31
         # Redis的String类型最大容量为512M，现使用256M
         self.seeds = [5, 7, 11]

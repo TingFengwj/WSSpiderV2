@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from fake_useragent import UserAgent
 import scrapy
 import re, json, datetime, time
-from WSSpiderV2.settings import HTTP_HEADER, client, BL
+from WSSpiderV2.settings import HTTP_HEADER, client
 from WSSpiderV2.items import Wsspiderv2Item
 from WSSpiderV2.utils.common import get_rnd_id, get_now, dupe_url_check, extract_date, filter_pun
 from WSSpiderV2.settings import LOGGING
@@ -48,18 +48,13 @@ class BaseParse(object):
         headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/"
                       "*;q=0.8,application/signed-exchange;v=b3",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "Connection": "keep-alive",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
-                          "like Gecko) Chrome/77.0.3865.90 Safari/537.36"
+                          "like Gecko) Chrome/77.0.3865.90 Safari/537.36",
+            "Refer": url,
         }
-        if not BL.isContains(url):
-            BL.insert(url)
-            return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
-                                  headers=headers)
-        else:
-            logger.info('已爬取过该url，url：{}').format(url)
+
+        return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
+                              headers=headers)
 
     # JSON 参数请求
     def make_json_request(self, url, callback, spider, body):
@@ -88,10 +83,17 @@ class GeneralParse(BaseParse):
                 result = list(set(re.findall(r'%s' % self.config['rules']['second_xpath'], text)))
             else:
                 result = list(set(response.xpath(self.config['rules']['second_xpath']).extract()))
+            print(response.url)
+            print(response.status)
+            print(result)
+            print('this is second result')
             _link = self.second_more_url(response=response, spider=spider, result=result)
+            print(_link)
             for i in _link:
                 yield self.make_request(url=i, callback=self.parse_item, spider=spider)
             net_url = self.next_url(spider=spider, response=response)
+            print('next_url')
+            print(net_url)
             if net_url:
                 self.list_type = 2
                 yield self.make_request(url=net_url, callback=self.process, spider=spider)
@@ -102,10 +104,20 @@ class GeneralParse(BaseParse):
                 result = list(set(re.findall(r'%s' % self.config['rules']['third_xpath'], text)))
             else:
                 result = response.xpath(self.config['rules']['third_xpath']).extract()
+            print(response.status)
+            print(result)
             _link = self.third_more_url(response=response, spider=spider, result=result)
+            print(_link)
             self.list_type = 2
             for i in _link:
                 yield self.make_request(url=i, callback=self.process, spider=spider)
+            if "second_detail_xpath" in list(self.config.get('rules').keys()):
+                net_url = self.next_url(spider=spider, response=response)
+                print('next_url')
+                print(net_url)
+                if net_url:
+                    self.list_type = 3
+                    yield self.make_request(url=net_url, callback=self.process, spider=spider)
 
         elif self.list_type == 4:
             """四层列表页"""
@@ -114,6 +126,8 @@ class GeneralParse(BaseParse):
                 result = list(set(re.findall(r'%s' % self.config['rules']['fourth_xpath'], text)))
             else:
                 result = list(set(response.xpath(self.config['rules']['fourth_xpath']).extract()))
+            print(self.config['rules']['fourth_xpath'])
+            print(result)
             _link = self.fourth_more_url(response=response, spider=spider, result=result)
             self.list_type = 3
             for i in _link:
@@ -135,18 +149,23 @@ class GeneralParse(BaseParse):
                 for i in result:
                     if not i.startswith('http'):
                         final_url = self.config.get('index_url') + i
-                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                        end_url = final_url[0:6] + final_url[6::].replace('//', '/')
+                        if '\\' in repr(end_url):
+                            end_url = repr(end_url).replace('\\', '/')
+                        _href_list.append(end_url)
                     else:
+                        if '\\' in repr(i):
+                            i = repr(i).replace('\\', '/')
                         _href_list.append(i)
             elif second_more_type == 3:  #
                 for i in result:
                     if i.startswith('.'):
-                        final_url = response.url + i[1::]
-                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                        final_url = self.config.get('index_url') + i[1::]
+                        _href_list.append(final_url[0:7] + final_url[7::].replace('//', '/'))
                     else:
                         _href_list.append(i)
             elif second_more_type == 5:  # 需要进行re匹配的url
-                result = [re.findall(r'(/[a-z][A-Z]*.*html)', j)[0] for j in result if j not in ['', '#', '/']]
+                result = [re.findall(r'(/[a-z][A-Z]*.*htm[l]*)', j)[0] for j in result if j not in ['', '#', '/']]
                 for i in result:
                     if i.startswith('.'):
                         final_url = response.url + i[1::]
@@ -173,8 +192,13 @@ class GeneralParse(BaseParse):
                     if '#' not in i:
                         if not i.startswith('http'):
                             new_url = self.config.get('index_url') + i
-                            _href_list.append(new_url[0:8] + new_url[8::].replace('//', '/'))
+                            end_url = new_url[0:6] + new_url[6::].replace('//', '/')
+                            if '\\' in repr(end_url):
+                                end_url = repr(end_url).replace('\\', '/')
+                            _href_list.append(end_url)
                         else:
+                            if '\\' in repr(i):
+                                i = repr(i).replace('\\', '/')
                             _href_list.append(i)
             elif third_more_type == 3:  #
                 for i in result:
@@ -192,7 +216,15 @@ class GeneralParse(BaseParse):
                     else:
                         _href_list.append(i)
             elif third_more_type == 5:
-                result = [re.findall(r'(/[a-zA-Z].*html)', j)[0] for j in result if j not in ['', '/']]
+                result = [re.findall(r'(/[a-zA-Z].*html)', j)[0] for j in result if j not in ['', '/', './']]
+                for i in result:
+                    if i.startswith('.'):
+                        final_url = response.url + i[1::]
+                        _href_list.append(final_url[0:6] + final_url[6::].replace('//', '/'))
+                    else:
+                        _href_list.append(self.config.get('index_url') + i)
+            elif third_more_type == 6:
+                result = [re.findall(r'(/[a-zA-Z].*[html]*)', j)[0] for j in result if j not in ['', '/', './']]
                 for i in result:
                     if i.startswith('.'):
                         final_url = response.url + i[1::]
@@ -271,11 +303,11 @@ class GeneralParse(BaseParse):
                 return None
         elif self.config.get('next_type') == 3:
             """框架翻页"""
-            _next_page_url = re.findall(r'.*(/.*[a-z]*h)tm', response.url)
+            _next_page_url = re.findall(r'.*(/.*[a-z]*[0-9]*h)tm', response.url)
             if _next_page_url:
-                page = re.findall(r'[0-9][0-9]*[0-9]*', _next_page_url[0])
+                page = re.findall(r'_([0-9][0-9]*[0-9]*).h', _next_page_url[0])
                 if page:
-                    new_page = str(int(page[0]) + 1)
+                    new_page = str(int(page[-1]) + 1)
                     _next_page_url = response.url.replace(_next_page_url[0],
                                                           _next_page_url[0].replace(page[0], new_page))
                 else:
@@ -288,8 +320,7 @@ class GeneralParse(BaseParse):
                 else:
                     _next_page_url = None
             else:
-                _next_page_url = response.url + 'index_1.htm'
-
+                _next_page_url = response.url + self.config.get('rules')['next_page']
             if requests.get(url=_next_page_url):
                 return _next_page_url
             else:
@@ -323,7 +354,7 @@ class GeneralParse(BaseParse):
             text = response.text
             _next_page_url = re.findall(r'%s' % self.config['rules']['next_page'], text)
             if _next_page_url:
-                return _next_page_url[0]
+                return urljoin(response.url, _next_page_url[0])
             else:
                 return None
 
@@ -377,6 +408,30 @@ class GeneralParse(BaseParse):
             self.page_index += 1
             next_url = urljoin(response.url, '?page={}'.format(self.page_index))
             if self.page_index < 100:
+                return next_url
+            else:
+                return None
+        elif self.config.get('next_type') == 10:
+            _next_page_url = re.findall(r'.*(/.*[a-z]*h)tm', response.url)
+            if _next_page_url:
+                page = re.findall(r'[0-9][0-9]*[0-9]*', _next_page_url[0])
+                if page:
+                    new_page = str(int(page[0]) + 1)
+                    _next_page_url = response.url.replace(_next_page_url[0],
+                                                          _next_page_url[0].replace(page[0], new_page))
+                else:
+                    _next_page_url = response.url.replace(_next_page_url[0], _next_page_url[0].replace('.', '_2.'))
+            else:
+                _next_page_url = response.url + 'default_1.htm'
+            if requests.get(url=_next_page_url):
+                return _next_page_url
+            else:
+                return None
+        elif self.config.get('next_type') == 11:
+            self.page_index += 1
+            next_page = self.config.get('rules')['next_page']
+            next_url = next_page.format(self.page_index)
+            if self.page_index <= self.config.get('rules')['max_page']:
                 return next_url
             else:
                 return None
