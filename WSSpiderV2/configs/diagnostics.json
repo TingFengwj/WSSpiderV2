@@ -1,24 +1,24 @@
-
 {
   "siteName": "上海市人民政府",
   "siteName_id": "7BTMQ7Rpq",
-  "index_url": "http://www.cpa.org.cn/",
+  "index_url": "http://fda.hubei.gov.cn/",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
-  "list_type": 3,
-  "next_type": 3,
-  "base_url": "http://www.cpa.org.cn/?do=infolist&classid=213",
-  "rules":   {
-      "xpath_title": "//div[@id='clist']//a/text()",
-      "second_xpath": "//div[@id='clist']//a/@href",
-      "third_xpath": "//div[@id='cbleft']//a/@href",
-      "third_more_type": 2,
-      "second_more_type": 2,
-      "next_page": "&page=2",
-      "xpath_time": "//div[@id='cbleft']//span/@title",
-      "title":  "//h1[font]//text()",
-      "content": "//div[@id='cpabody']//p",
-      "datetime": "//div[@id='ctis']//text()"
-    }
+  "list_type": 2,
+  "next_type": 11,
+  "base_url": "http://fda.hubei.gov.cn/info/iList.jsp?cat_id=10011",
+  "rules": {
+	"title": "//div[@class='article']/h2/text()",
+	"content": "//div[@class='article-box']/span | //div[@class='article-box']//p | //div[@class='article-box']//text()",
+	"datetime": "//div[@class='info']/span/text()",
+	"max_page": 377,
+	"next_page": "http://fda.hubei.gov.cn/info/iList.jsp?site_id=CMShubfda&cat_id=10011&cur_page={}",
+	"xpath_time": "//ul[@class='list-b-t']//li//span/text()",
+	"third_xpath": "//div[@class='main']//a[text()='政务要闻' or text()='省市场局要闻' or text()='工作动态']/@href",
+	"xpath_title": "//ul[@class='list-b-t']//li/a/@title",
+	"second_xpath": "//ul[@class='list-b-t']//li/a[@title]/@href",
+	"third_more_type": 2,
+	"second_more_type": 2
+  }
 }

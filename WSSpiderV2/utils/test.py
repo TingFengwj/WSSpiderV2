@@ -46,12 +46,13 @@ def read_data_mysql(FilePath):
     for j in range(1, col_len):
         row_value = sheet1.row_values(j)
         time.sleep(0.01)
-        sql = """INSERT INTO `spider_list` VALUES ('%s', %d, %d, %d, %d, %d, %d, '%s', '%s', %d, '%s', '%s');""" % (
-            str(row_value[0]), int(row_value[1]), int(row_value[2]), int(row_value[3]), int(row_value[4]),
-            int(row_value[5]), int(row_value[6]), row_value[7], row_value[8], int(row_value[9]),
-            pymysql.escape_string(json.dumps(json.loads(row_value[10].replace('\n', '')))), str(get_rnd_id()))
-        # print(sql)
         try:
+            sql = """INSERT INTO `spider_list` VALUES ('%s', %d, %d, %d, %d, %d, %d, '%s', '%s', %d, '%s', '%s');""" % (
+                str(row_value[0]), int(row_value[1]), int(row_value[2]), int(row_value[3]), int(row_value[4]),
+                int(row_value[5]), int(row_value[6]), row_value[7], row_value[8], int(row_value[9]),
+                pymysql.escape_string(json.dumps(json.loads(row_value[10].replace('\n', '')))), str(get_rnd_id()))
+            print(sql)
+
             cursor.execute(sql)
             db.commit()
         except Exception as e:
@@ -63,6 +64,6 @@ def read_data_mysql(FilePath):
 
 if __name__ == '__main__':
     # 注，Windows系统需要在filePath前加 ‘r’
-    FilePath = r'C:\Users\zwjt\Desktop\inser_mysql(1)(1).xlsx'
+    FilePath = '/Users/wenjun/project/company_data/zixun_53.xlsx'
 
     print(read_data_mysql(FilePath))

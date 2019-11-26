@@ -50,9 +50,9 @@ class BaseParse(object):
                       "*;q=0.8,application/signed-exchange;v=b3",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                           "like Gecko) Chrome/77.0.3865.90 Safari/537.36",
-            "Refer": url,
         }
-
+        if "headers" in list(self.config.get('rules').keys()):
+            headers = self.config.get('rules')['headers']
         return scrapy.Request(url, meta=_meta, callback=spider.parse_item, dont_filter=True,
                               headers=headers)
 
@@ -148,7 +148,7 @@ class GeneralParse(BaseParse):
             elif second_more_type == 2:  # 需要拼接主域名的url
                 for i in result:
                     if not i.startswith('http'):
-                        final_url = self.config.get('index_url') + i
+                        final_url = urljoin(self.config.get('index_url'), i)
                         end_url = final_url[0:6] + final_url[6::].replace('//', '/')
                         if '\\' in repr(end_url):
                             end_url = repr(end_url).replace('\\', '/')
@@ -305,7 +305,7 @@ class GeneralParse(BaseParse):
             """框架翻页"""
             _next_page_url = re.findall(r'.*(/.*[a-z]*[0-9]*h)tm', response.url)
             if _next_page_url:
-                page = re.findall(r'_([0-9][0-9]*[0-9]*).h', _next_page_url[0])
+                page = re.findall(r'_([0-9][0-9]*[0-9]*).[a-zA-Z]*h', _next_page_url[0])
                 if page:
                     new_page = str(int(page[-1]) + 1)
                     _next_page_url = response.url.replace(_next_page_url[0],
@@ -321,6 +321,7 @@ class GeneralParse(BaseParse):
                     _next_page_url = None
             else:
                 _next_page_url = response.url + self.config.get('rules')['next_page']
+            # raise 1
             if requests.get(url=_next_page_url):
                 return _next_page_url
             else:
