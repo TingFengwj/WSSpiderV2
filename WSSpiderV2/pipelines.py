@@ -84,6 +84,5 @@ class Wsspiderv2Pipeline(object):
         except Exception as e:
             logger.info(e)
             self.sess.rollback()
-            raise
         finally:
             self.sess.close()

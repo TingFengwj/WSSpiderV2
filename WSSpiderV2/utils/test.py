@@ -41,7 +41,7 @@ def read_data_mysql(FilePath):
     x1 = xlrd.open_workbook(FilePath)
     sheet1 = x1.sheet_by_index(0)
     col_len = len(sheet1.col_values(0))
-    db = pymysql.connect('192.168.0.167', 'root', 'QWE@zw666', 'test_spiderv1')
+    db = pymysql.connect('192.168.0.167', 'root', 'QWE@zw666', 'test_spiderv2')
     cursor = db.cursor()
     for j in range(1, col_len):
         row_value = sheet1.row_values(j)
@@ -64,6 +64,10 @@ def read_data_mysql(FilePath):
 
 if __name__ == '__main__':
     # 注，Windows系统需要在filePath前加 ‘r’
+    insert = '/Users/wenjun/project/company_data/insert.xlsx'
+    zhengfu = '/Users/wenjun/project/company_data/zhengfu_insert.xlsx'
     FilePath = '/Users/wenjun/project/company_data/zixun_53.xlsx'
 
+    print(read_data_mysql(insert))
+    print(read_data_mysql(zhengfu))
     print(read_data_mysql(FilePath))
