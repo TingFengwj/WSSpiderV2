@@ -75,14 +75,13 @@ class Wsspiderv2Pipeline(object):
             new_item = self.Creative(**item)
             self.sess.add(new_item)
             print('New item {} added to DB.'.format(item['title']))
-        return item
-
-    def close_spider(self, spider):
-        # We commit and save all items to DB when spider finished scraping.
         try:
             self.sess.commit()
         except Exception as e:
             logger.info(e)
             self.sess.rollback()
-        finally:
-            self.sess.close()
+        return item
+
+    def close_spider(self, spider):
+        # We commit and save all items to DB when spider finished scraping.
+        self.sess.close()

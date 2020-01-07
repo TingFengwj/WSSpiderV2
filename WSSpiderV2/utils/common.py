@@ -31,10 +31,11 @@ def get_rnd_id():
     num = int(string_num)
     mid = []
     while True:
-        if num == 0: break
+        if num == 0:
+            break
         num, rem = divmod(num, 62)
         mid.append(b_str[rem])
-    return ''.join([str(x) for x in mid[::-1]])+random.choice(b_str)
+    return ''.join([str(x) for x in mid[::-1]]) + random.choice(b_str)
 
 
 # 当前时间
@@ -91,7 +92,7 @@ def extract_date(string):
     r = re.search(pattern, string)
     if r is not None:
         return '{0} {1}'.format(r.group().replace('.', '-'), '09:00:00')
-    
+
     pattern = r'(\d{1,2})\.(\d{1,2})\.(\d{4})'
     r = re.search(pattern, string)
     if r is not None:
@@ -180,4 +181,3 @@ def dupe_url_check(url):
 
 def record_error(content):
     client.lpush(REDIS_SPIDER_ERROR_LIST_KEY, content)
-
