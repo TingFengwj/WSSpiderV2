@@ -1,24 +1,24 @@
 {
   "siteName": "上海市人民政府",
   "siteName_id": "7BTMQ7Rpq",
-  "index_url": "http://fda.hubei.gov.cn/",
+  "index_url": "http://www.nhc.gov.cn/wjw/xinw/xwzx.shtml",
   "allow_img": false,
   "allow_video": false,
   "url_type": 0,
   "list_type": 2,
   "next_type": 11,
-  "base_url": "http://fda.hubei.gov.cn/info/iList.jsp?cat_id=10011",
+  "base_url": "http://www.nhc.gov.cn/wjw/wnsj/list.shtml",
   "rules": {
-	"title": "//div[@class='article']/h2/text()",
-	"content": "//div[@class='article-box']/span | //div[@class='article-box']//p | //div[@class='article-box']//text()",
-	"datetime": "//div[@class='info']/span/text()",
-	"max_page": 377,
-	"next_page": "http://fda.hubei.gov.cn/info/iList.jsp?site_id=CMShubfda&cat_id=10011&cur_page={}",
-	"xpath_time": "//ul[@class='list-b-t']//li//span/text()",
-	"third_xpath": "//div[@class='main']//a[text()='政务要闻' or text()='省市场局要闻' or text()='工作动态']/@href",
-	"xpath_title": "//ul[@class='list-b-t']//li/a/@title",
-	"second_xpath": "//ul[@class='list-b-t']//li/a[@title]/@href",
-	"third_more_type": 2,
-	"second_more_type": 2
-  }
+      "second_xpath": "//ul[@class='zxxx_list mt20']//a/@href",
+      "second_more_type": 2,
+      "third_xpath": "//a[text()='新闻动态' or text()='委内司局' or text()='国际交流' or text()='媒体报道' or text()='疫情播报' or text()='时政要闻' or text()='国务院文件' or text()='回应关切' or text()='新闻发布会' or text()='在线发布']/@href",
+      "third_more_type": 2,
+      "xpath_title": "//ul[@class='zxxx_list mt20']//a/text()",
+      "next_page": "http://www.nhc.gov.cn/wjw/wnsj/list_{}.shtml",
+      "max_page": 42,
+      "xpath_time": "//ul[@class='zxxx_list mt20']//span/text()",
+      "title":  "//div[@class='tit']/text()",
+      "content": "//div[@class='con']",
+      "datetime": "//div[@class='source']//span[1]/text()"
+    }
 }

@@ -8,7 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-import redis, os
+import redis
 from WSSpiderV2.configs.local import *
 from WSSpiderV2.utils.bloom_filter import BloomFilter
 
