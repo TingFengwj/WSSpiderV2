@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Spyder wenjun
 
 This is a temporary script file.
 """
@@ -8,11 +8,10 @@ import json
 import xlrd
 import pymysql
 import random
-import re
 import datetime
 import time
 
-filePath = r'C:\Users\zwjt\Desktop\insert.xlsx'
+FilePath = r'C:\Users\zwjt\Desktop\inser_mysql(1)(1).xlsx'
 b_str = [str(x) for x in range(10)] + [chr(x) for x in range(ord('A'), ord('A') + 26)] \
         + [chr(x) for x in range(ord('a'), ord('a') + 26)]
 
@@ -26,22 +25,23 @@ def get_rnd_id():
     num = int(string_num)
     mid = []
     while True:
-        if num == 0: break
+        if num == 0:
+            break
         num, rem = divmod(num, 62)
         mid.append(b_str[rem])
-    return ''.join([str(x) for x in mid[::-1]])+random.choice(b_str)
+    return ''.join([str(x) for x in mid[::-1]]) + random.choice(b_str)
 
 
-def read_data_mysql(filePath):
+def read_data_mysql(FilePath):
     """
     读取excel表中的数据☞mysql数据库中
-    :param filePath: Excel文件路径
+    :param FilePath: Excel文件路径
     :return:
     """
-    x1 = xlrd.open_workbook(filePath)
+    x1 = xlrd.open_workbook(FilePath)
     sheet1 = x1.sheet_by_index(0)
     col_len = len(sheet1.col_values(0))
-    db = pymysql.connect('192.168.0.164', 'root', 'QWE@zw666', 'test_spiderv2')
+    db = pymysql.connect('192.168.0.167', 'root', 'QWE@zw666', 'test_spiderv2')
     cursor = db.cursor()
     for j in range(1, col_len):
         row_value = sheet1.row_values(j)
@@ -51,22 +51,27 @@ def read_data_mysql(filePath):
                 str(row_value[0]), int(row_value[1]), int(row_value[2]), int(row_value[3]), int(row_value[4]),
                 int(row_value[5]), int(row_value[6]), row_value[7], row_value[8], int(row_value[9]),
                 pymysql.escape_string(json.dumps(json.loads(row_value[10].replace('\n', '')))), str(get_rnd_id()))
-            # print(sql)
+            print(sql)
+
             cursor.execute(sql)
             db.commit()
         except Exception as e:
             print(e)
-            pass
     cursor.close()
     db.close()
     return '数据已入库'
 
 
-if __name__ == '__main__':
+def do_insert():
     # 注，Windows系统需要在filePath前加 ‘r’
-    filePath = r'C:\Users\Administrator\Desktop\zhengfu_insert.xlsx'
-    filePath1 = r'C:\Users\Administrator\Desktop\zixun_53.xlsx'
-    filePath2 = r'C:\Users\Administrator\Desktop\insert.xlsx'
-    print(read_data_mysql(filePath))
-    print(read_data_mysql(filePath1))
-    print(read_data_mysql(filePath2))
+    insert = '/Users/wenjun/project/company_data/insert.xlsx'
+    zf = '/Users/wenjun/project/company_data/zhengfu_insert.xlsx'
+    filepath = '/Users/wenjun/project/company_data/zixun_53.xlsx'
+    print(read_data_mysql(insert))
+    print(read_data_mysql(zf))
+    print(read_data_mysql(filepath))
+
+
+if __name__ == '__main__':
+    # do_insert()  # 向数据库中插入操作
+    pass

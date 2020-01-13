@@ -118,7 +118,6 @@ class GeneralParse(BaseParse):
                 if net_url:
                     self.list_type = 3
                     yield self.make_request(url=net_url, callback=self.process, spider=spider)
-
         elif self.list_type == 4:
             """四层列表页"""
             if "fourth_xpath_re" in list(self.config.get('rules').keys()):

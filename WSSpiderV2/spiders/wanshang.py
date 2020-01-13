@@ -55,13 +55,16 @@ class WanshangSpider(RedisSpider):
             except Exception as e:
                 req = None
                 logger.error('[Event: Request_Error, Result: failure, Message: base_url请求失败{},'
-                             ' Error: {}, Data: (siteName_id:{}{})]'.format(e, req, _spider_object['siteName_id'], _spider_object['base_url']), exc_info=True)
+                             ' Error: {}, Data: (siteName_id:{}{})]'.format(e, req, _spider_object['siteName_id'],
+                                                                            _spider_object['base_url']), exc_info=True)
             if req:
                 yield req
                 found += 1
             else:
                 logger.error('[Event: Request_Error, Result: failure, Message: base_url请求失败,'
-                             ' Error: {}, Data: (siteName_id:{}{})]'.format(str(req), str(_spider_object['siteName_id']), _spider_object['base_url']), exc_info=True)
+                             ' Error: {}, Data: (siteName_id:{}{})]'.format(str(req),
+                                                                            str(_spider_object['siteName_id']),
+                                                                            _spider_object['base_url']), exc_info=True)
         if found:
             logger.info('[Event: Read_Data, Result: success, Message: 获取爬虫配置数量{}, '
                         'Redis_Key: {}]'.format(found, self.redis_key), exc_info=True)
@@ -76,7 +79,9 @@ class WanshangSpider(RedisSpider):
             _spider = GeneralParse(_class_config)  # 爬虫实例化
             return _spider.process(response, self)
         except Exception as e:
-            logger.error('[Event: GeneralParse, Result: failure, Message: 实例化爬虫失败{}, Data: {}]'.format(e, str(_class_config)), exc_info=True)
+            logger.error(
+                '[Event: GeneralParse, Result: failure, Message: 实例化爬虫失败{}, Data: {}]'.format(e, str(_class_config)),
+                exc_info=True)
 
     def parse_item(self, response):
         _parse = response.meta['parse']
